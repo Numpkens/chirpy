@@ -34,6 +34,7 @@ func (cfg *apiConfig) handlerMetrics(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(responseBody))
 }
 
+// handlerReset resets the hit counter back to zero.
 func (cfg *apiConfig) handlerReset(w http.ResponseWriter, r *http.Request) {
 	cfg.fileserverHits.Store(0)
 
@@ -49,20 +50,16 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	// Update the routing to include the required HTTP methods
 
-	// /healthz must only accept GET requests
-	mux.HandleFunc("GET /healthz", handlerReadiness)
+	mux.HandleFunc("GET /api/healthz", handlerReadiness)
 
-	// /metrics must only accept GET requests
-	mux.HandleFunc("GET /metrics", apiCfg.handlerMetrics)
+	mux.HandleFunc("GET /api/metrics", apiCfg.handlerMetrics)
 
-	// /reset must only accept POST requests
-	mux.HandleFunc("POST /reset", apiCfg.handlerReset)
+	mux.HandleFunc("POST /api/reset", apiCfg.handlerReset)
 
-	// File server remains the same (handles GET requests implicitly)
 	fsHandler := http.FileServer(http.Dir("."))
 	strippedHandler := http.StripPrefix("/app", fsHandler)
+	
 	mux.Handle("/app/", apiCfg.middlewareMetricsInc(strippedHandler))
 
 	server := &http.Server{
@@ -77,9 +74,7 @@ func main() {
 	log.Printf("Starting server on %s", server.Addr)
 
 	err := server.ListenAndServe()
-
 	if err != nil {
 		log.Fatal(err)
 	}
 }
-
