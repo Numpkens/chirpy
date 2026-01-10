@@ -1,0 +1,24 @@
+# Environment variables (Crucial for security)
+.env
+
+# Binary/Executable files
+chirpy
+__debug_bin
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Dependency folders
+vendor/
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# IDE/Editor specific
+.vscode/
+.idea/
+*.swp
+*.swo
